@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SGFX Email Signature Generator</title>
+<style>
+  :root{--navy:#061B3F;--teal:#006666;--line:#E5E7EB;--muted:#6B7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins','Segoe UI',Helvetica,Arial,sans-serif;background:#F5F5F7;color:#111}
+  header{background:var(--navy);color:#fff;padding:22px 32px;display:flex;align-items:center;gap:14px}
+  header img{width:40px;height:40px;border-radius:8px}
+  header h1{font-size:18px;margin:0;font-weight:600}
+  main{max-width:1100px;margin:28px auto;padding:0 24px;display:grid;grid-template-columns:340px 1fr;gap:24px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px}
+  label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin:14px 0 6px}
+  label:first-child{margin-top:0}
+  input{width:100%;padding:10px 12px;border:1px solid #D2D2D7;border-radius:8px;font:inherit;font-size:14px}
+  input:focus{outline:2px solid var(--teal);border-color:transparent}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px}
+  .btns{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  button{flex:1;padding:12px 14px;border-radius:8px;border:0;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .primary{background:var(--navy);color:#fff}
+  .secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+  .toast{font-size:13px;color:var(--teal);min-height:18px;margin-top:10px}
+  h2{font-size:14px;margin:0 0 16px;color:var(--navy)}
+  #preview{border:1px dashed #D2D2D7;border-radius:8px;padding:24px;overflow:auto}
+  details{margin-top:18px;font-size:13px;line-height:1.6}
+  summary{cursor:pointer;font-weight:600;color:var(--navy)}
+  details ol{padding-left:18px;margin:8px 0}
+  .warn{background:#FFF6DE;border:1px solid #F0A30A;border-radius:8px;padding:10px 12px;font-size:12px;margin-top:14px;display:none}
+  @media(max-width:860px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <img src="images/sgfx-logo.png" alt="SGFX">
+  <h1>SGFX Email Signature Generator</h1>
+</header>
+
+<main>
+  <section class="card">
+    <label for="name">Full name</label>
+    <input id="name" value="Richmond Kpodo">
+    <label for="title">Job title</label>
+    <input id="title" value="Multimedia Designer">
+    <label for="email">Email</label>
+    <input id="email" value="richmond@sgfx.com">
+    <label for="phone">Phone (optional)</label>
+    <input id="phone" placeholder="+971 50 000 0000">
+    <div class="hint">Leave blank to hide the phone row.</div>
+
+    <div class="btns">
+      <button class="primary" id="copySig">Copy signature</button>
+      <button class="secondary" id="copyHtml">Copy HTML</button>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="warn" id="warn">Images are loading from this computer, not from the hosted URL. Set <code>IMAGE_BASE</code> in this file before you share it, or the logo will break again.</div>
+
+    <details>
+      <summary>Gmail</summary>
+      <ol>
+        <li>Click <b>Copy signature</b>.</li>
+        <li>Gmail → ⚙️ → <b>See all settings</b> → <b>General</b> → <b>Signature</b> → <b>Create new</b>.</li>
+        <li>Paste into the box, scroll down and click <b>Save Changes</b>.</li>
+      </ol>
+    </details>
+    <details>
+      <summary>Outlook (new Outlook / web)</summary>
+      <ol>
+        <li>Click <b>Copy signature</b>.</li>
+        <li>Settings → <b>Accounts</b> → <b>Signatures</b> → <b>New signature</b>.</li>
+        <li>Paste, name it "SGFX", set it as the default for new messages and replies, then <b>Save</b>.</li>
+      </ol>
+    </details>
+    <details>
+      <summary>Apple Mail</summary>
+      <ol>
+        <li>Open this page in <b>Safari</b> and click <b>Copy signature</b>.</li>
+        <li>Mail → Settings → <b>Signatures</b> → <b>+</b>.</li>
+        <li>Untick "Always match my default message font", then paste into the right-hand panel.</li>
+      </ol>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>Preview</h2>
+    <div id="preview"></div>
+  </section>
+</main>
+
+<script>
+/* Public folder that holds the files from images/. Must be an https URL that
+   anyone can open with no login (company CDN, website, or S3 bucket). */
+const IMAGE_BASE = "";
+
+const BRAND = {
+  navy: "#061B3F", teal: "#006666", text: "#1F2937", muted: "#6B7280", rule: "#D2D2D7",
+  font: "'Poppins','Segoe UI',Helvetica,Arial,sans-serif",
+  site: "https://www.sgfx.com", siteLabel: "sgfx.com",
+  socials: [
+    ["instagram", "Instagram", "https://www.instagram.com/sgfx.global"],
+    ["linkedin",  "LinkedIn",  "https://www.linkedin.com/company/sgfx-global/"],
+    ["youtube",   "YouTube",   "https://www.youtube.com/channel/UCskXlDmPEw4L1UokQzGmtug"],
+    ["x",         "X",         "https://x.com/SGFXGLOBAL"],
+    ["facebook",  "Facebook",  "https://www.facebook.com/profile.php?id=61573714615923"],
+  ],
+};
+
+const base = (IMAGE_BASE || new URL("images/", location.href).href).replace(/\/?$/, "/");
+const img = f => base + f;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function contactRow(icon, label, href) {
+  return `<tr><td style="padding:0 0 6px 0;">
+    <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>
+      <td width="22" style="width:22px;vertical-align:middle;"><img src="${img(icon)}" width="16" height="16" alt="" style="display:block;width:16px;height:16px;border:0;"></td>
+      <td style="vertical-align:middle;font-family:${BRAND.font};font-size:13px;line-height:18px;"><a href="${href}" style="color:${BRAND.text};text-decoration:none;">${esc(label)}</a></td>
+    </tr></table>
+  </td></tr>`;
+}
+
+function buildSignature({ name, title, email, phone }) {
+  const F = `font-family:${BRAND.font};`;
+  const socials = BRAND.socials.map(([k, alt, url]) =>
+    `<td style="padding:0 10px 0 0;"><a href="${url}" target="_blank"><img src="${img("social-" + k + ".png")}" width="20" height="20" alt="${alt}" style="display:block;width:20px;height:20px;border:0;"></a></td>`
+  ).join("");
+  const phoneRow = phone.trim()
+    ? contactRow("icon-phone.png", phone.trim(), "tel:" + phone.replace(/[^\d+]/g, "")) : "";
+
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;max-width:560px;${F}">
+  <tr>
+    <td valign="top" style="padding:0 18px 0 0;vertical-align:top;">
+      <a href="${BRAND.site}" target="_blank"><img src="${img("sgfx-logo.png")}" width="96" height="96" alt="SGFX" style="display:block;width:96px;height:96px;border:0;border-radius:12px;"></a>
+    </td>
+    <td valign="top" style="padding:0 0 0 18px;border-left:2px solid ${BRAND.teal};vertical-align:top;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+        <tr><td style="${F}font-size:18px;line-height:24px;font-weight:700;color:${BRAND.navy};">${esc(name)}</td></tr>
+        <tr><td style="${F}font-size:13px;line-height:18px;color:${BRAND.muted};padding:0 0 6px 0;">${esc(title)}</td></tr>
+        <tr><td style="${F}font-size:13px;line-height:18px;font-weight:700;color:${BRAND.navy};padding:0 0 10px 0;">SGFX <span style="color:${BRAND.teal};">|</span> Spectra Global</td></tr>
+        ${contactRow("icon-mail.png", email, "mailto:" + email)}
+        ${phoneRow}
+        ${contactRow("icon-globe.png", BRAND.siteLabel, BRAND.site)}
+        <tr><td style="${F}font-size:13px;line-height:18px;font-weight:700;color:${BRAND.teal};padding:6px 0 2px 0;">Trade Smarter, Trade SGFX</td></tr>
+        <tr><td style="${F}font-size:12px;line-height:18px;color:${BRAND.text};padding:0 0 10px 0;">Forex | Commodities | Indices | Stocks | Crypto</td></tr>
+        <tr><td><table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>${socials}</tr></table></td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr><td colspan="2" style="padding:18px 0 0 0;">
+    <table cellpadding="0" cellspacing="0" border="0" role="presentation" width="100%"><tr><td style="border-top:1px solid ${BRAND.rule};font-size:0;line-height:0;">&nbsp;</td></tr></table>
+  </td></tr>
+  <tr><td colspan="2" style="${F}font-size:10px;line-height:14px;color:${BRAND.muted};padding:12px 0 0 0;">
+    <b>IMPORTANT:</b> The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
+  </td></tr>
+  <tr><td colspan="2" style="${F}font-size:10px;line-height:14px;color:${BRAND.muted};padding:8px 0 0 0;">
+    <b>RISK WARNING:</b> Trading Contracts for Difference (CFDs) involves high risk due to their complex nature and margin trading. There is a possibility of losing your entire capital, and these products may not be suitable for everyone. Understand the associated risks and seek independent expert advice if needed.
+  </td></tr>
+</table>`;
+}
+
+const ids = ["name", "title", "email", "phone"];
+const preview = document.getElementById("preview");
+const toast = msg => { const t = document.getElementById("toast"); t.textContent = msg; setTimeout(() => t.textContent = "", 3000); };
+const values = () => Object.fromEntries(ids.map(i => [i, document.getElementById(i).value]));
+const render = () => { preview.innerHTML = buildSignature(values()); };
+
+ids.forEach(i => document.getElementById(i).addEventListener("input", render));
+document.getElementById("warn").style.display = IMAGE_BASE ? "none" : "block";
+render();
+
+document.getElementById("copySig").addEventListener("click", async () => {
+  const html = buildSignature(values());
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([html], { type: "text/html" }),
+      "text/plain": new Blob([preview.innerText], { type: "text/plain" }),
+    })]);
+  } catch {
+    const r = document.createRange(); r.selectNodeContents(preview);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    document.execCommand("copy"); s.removeAllRanges();
+  }
+  toast("Signature copied. Paste it into your email signature settings.");
+});
+
+document.getElementById("copyHtml").addEventListener("click", async () => {
+  await navigator.clipboard.writeText(buildSignature(values()));
+  toast("HTML copied.");
+});
+</script>
+</body>
+</html>
