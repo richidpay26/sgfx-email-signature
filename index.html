@@ -128,12 +128,13 @@ function buildSignature({ name, title, email, phone }) {
   const phoneRow = phone.trim()
     ? contactRow("icon-phone.png", phone.trim(), "tel:" + phone.replace(/[^\d+]/g, "")) : "";
 
-  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;max-width:560px;${F}">
-  <tr>
-    <td valign="top" width="96" style="width:96px;padding:0 14px 0 0;vertical-align:top;">
-      <a href="${BRAND.site}" target="_blank"><img src="${img("sgfx-logo.png")}" width="96" height="96" alt="SGFX" style="display:block;width:96px;height:96px;border:0;border-radius:12px;"></a>
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="560" style="border-collapse:collapse;width:100%;max-width:560px;${F}">
+  <tr><td>
+  <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;"><tr>
+    <td valign="top" width="110" style="width:96px;padding:0 14px 0 0;vertical-align:top;">
+      <a href="${BRAND.site}" target="_blank"><img src="${img("sgfx-logo.png")}" width="96" height="96" alt="SGFX" style="display:block;width:96px;height:96px;border:0;"></a>
     </td>
-    <td valign="top" width="100%" style="width:100%;padding:0 0 0 18px;border-left:2px solid ${BRAND.teal};vertical-align:top;">
+    <td valign="top" style="padding:0 0 0 18px;border-left:2px solid ${BRAND.teal};vertical-align:top;">
       <table cellpadding="0" cellspacing="0" border="0" role="presentation">
         <tr><td style="${F}font-size:18px;line-height:24px;font-weight:700;color:${BRAND.navy};">${esc(name)}</td></tr>
         <tr><td style="${F}font-size:13px;line-height:18px;color:${BRAND.muted};padding:0 0 6px 0;">${esc(title)}</td></tr>
@@ -146,14 +147,15 @@ function buildSignature({ name, title, email, phone }) {
         <tr><td><table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>${socials}</tr></table></td></tr>
       </table>
     </td>
-  </tr>
-  <tr><td colspan="2" style="padding:18px 0 0 0;">
+  </tr></table>
+  </td></tr>
+  <tr><td style="padding:18px 0 0 0;">
     <table cellpadding="0" cellspacing="0" border="0" role="presentation" width="100%"><tr><td style="border-top:1px solid ${BRAND.rule};font-size:0;line-height:0;">&nbsp;</td></tr></table>
   </td></tr>
-  <tr><td colspan="2" style="${F}font-size:10px;line-height:14px;color:${BRAND.muted};padding:12px 0 0 0;">
+  <tr><td style="${F}font-size:10px;line-height:14px;color:${BRAND.muted};padding:12px 0 0 0;">
     <b>IMPORTANT:</b> The contents of this email and any attachments are confidential. They are intended for the named recipient(s) only. If you have received this email by mistake, please notify the sender immediately and do not disclose the contents to anyone or make copies thereof.
   </td></tr>
-  <tr><td colspan="2" style="${F}font-size:10px;line-height:14px;color:${BRAND.muted};padding:8px 0 0 0;">
+  <tr><td style="${F}font-size:10px;line-height:14px;color:${BRAND.muted};padding:8px 0 0 0;">
     <b>RISK WARNING:</b> Trading Contracts for Difference (CFDs) involves high risk due to their complex nature and margin trading. There is a possibility of losing your entire capital, and these products may not be suitable for everyone. Understand the associated risks and seek independent expert advice if needed.
   </td></tr>
 </table>`;
