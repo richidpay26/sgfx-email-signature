@@ -25,11 +25,20 @@
   .toast{font-size:13px;color:var(--teal);min-height:18px;margin-top:10px}
   h2{font-size:14px;margin:0 0 16px;color:var(--navy)}
   #preview{border:1px dashed #D2D2D7;border-radius:8px;padding:24px;overflow:auto}
-  details{margin-top:18px;font-size:13px;line-height:1.6}
-  summary{cursor:pointer;font-weight:600;color:var(--navy)}
-  details ol{padding-left:18px;margin:8px 0}
+  .guide{grid-column:1/-1}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+  .step{background:#F5F8FA;border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.5}
+  .step b.n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;margin-right:8px}
+  .step h3{display:flex;align-items:center;font-size:14px;margin:0 0 6px;color:var(--navy)}
+  .apps{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .app{border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6}
+  .app h3{font-size:14px;margin:0 0 6px;color:var(--navy)}
+  .app ol{padding-left:18px;margin:0}
+  .tips{margin-top:18px;background:#E6F2F2;border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6}
+  .tips h3{font-size:14px;margin:0 0 6px;color:var(--navy)}
+  .tips ul{padding-left:18px;margin:0}
   .warn{background:#FFF6DE;border:1px solid #F0A30A;border-radius:8px;padding:10px 12px;font-size:12px;margin-top:14px;display:none}
-  @media(max-width:860px){main{grid-template-columns:1fr}}
+  @media(max-width:860px){main,.steps,.apps{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -57,35 +66,81 @@
     <div class="toast" id="toast"></div>
     <div class="warn" id="warn">Images are loading from this computer, not from the hosted URL. Set <code>IMAGE_BASE</code> in this file before you share it, or the logo will break again.</div>
 
-    <details>
-      <summary>Gmail</summary>
-      <ol>
-        <li>Click <b>Copy signature</b>.</li>
-        <li>Gmail → ⚙️ → <b>See all settings</b> → <b>General</b> → <b>Signature</b> → <b>Create new</b>.</li>
-        <li>Paste into the box, scroll down and click <b>Save Changes</b>.</li>
-      </ol>
-    </details>
-    <details>
-      <summary>Outlook (new Outlook / web)</summary>
-      <ol>
-        <li>Click <b>Copy signature</b>.</li>
-        <li>Settings → <b>Accounts</b> → <b>Signatures</b> → <b>New signature</b>.</li>
-        <li>Paste, name it "SGFX", set it as the default for new messages and replies, then <b>Save</b>.</li>
-      </ol>
-    </details>
-    <details>
-      <summary>Apple Mail</summary>
-      <ol>
-        <li>Open this page in <b>Safari</b> and click <b>Copy signature</b>.</li>
-        <li>Mail → Settings → <b>Signatures</b> → <b>+</b>.</li>
-        <li>Untick "Always match my default message font", then paste into the right-hand panel.</li>
-      </ol>
-    </details>
   </section>
 
   <section class="card">
     <h2>Preview</h2>
     <div id="preview"></div>
+  </section>
+
+  <section class="card guide">
+    <h2>How to set up your signature</h2>
+    <div class="steps">
+      <div class="step"><h3><b class="n">1</b>Fill in your details</h3>Enter your name, job title, email and (optional) phone on the left. The preview updates as you type.</div>
+      <div class="step"><h3><b class="n">2</b>Copy the signature</h3>Click <b>Copy signature</b>. Don't select and copy the preview by hand, the button copies it with the right formatting.</div>
+      <div class="step"><h3><b class="n">3</b>Paste it into your email app</h3>Follow the steps for your app below, paste, and save. Send yourself a test email to check it.</div>
+    </div>
+
+    <div class="apps">
+      <div class="app">
+        <h3>Outlook desktop (Windows)</h3>
+        <ol>
+          <li><b>File</b> → <b>Options</b> → <b>Mail</b> → <b>Signatures…</b></li>
+          <li>Click <b>New</b>, name it "SGFX" and click <b>OK</b>.</li>
+          <li>Click in the edit box and press <b>Ctrl + V</b>.</li>
+          <li>On the right, set <b>New messages</b> and <b>Replies/forwards</b> to "SGFX", then click <b>OK</b>.</li>
+        </ol>
+      </div>
+      <div class="app">
+        <h3>New Outlook / Outlook on the web</h3>
+        <ol>
+          <li>⚙️ <b>Settings</b> → <b>Accounts</b> → <b>Signatures</b> → <b>+ New signature</b>.</li>
+          <li>Name it "SGFX" and paste into the box.</li>
+          <li>Set it as the default for <b>new messages</b> and <b>replies/forwards</b>, then click <b>Save</b>.</li>
+        </ol>
+      </div>
+      <div class="app">
+        <h3>Outlook for Mac</h3>
+        <ol>
+          <li><b>Outlook</b> → <b>Settings</b> → <b>Signatures</b> → <b>+</b>.</li>
+          <li>Name it "SGFX", paste into the box and close the window to save.</li>
+          <li>Under <b>Choose default signature</b>, pick "SGFX" for new messages and replies.</li>
+        </ol>
+      </div>
+      <div class="app">
+        <h3>Gmail</h3>
+        <ol>
+          <li>⚙️ → <b>See all settings</b> → <b>General</b> → <b>Signature</b> → <b>Create new</b>.</li>
+          <li>Name it "SGFX" and paste into the box.</li>
+          <li>Under <b>Signature defaults</b>, pick "SGFX" for new emails and replies, then click <b>Save Changes</b> at the bottom.</li>
+        </ol>
+      </div>
+      <div class="app">
+        <h3>Apple Mail</h3>
+        <ol>
+          <li>Open this page in <b>Safari</b> and click <b>Copy signature</b>.</li>
+          <li><b>Mail</b> → <b>Settings</b> → <b>Signatures</b> → <b>+</b>.</li>
+          <li>Untick "Always match my default message font", then paste into the right-hand panel.</li>
+        </ol>
+      </div>
+      <div class="app">
+        <h3>Gmail / Outlook on your phone</h3>
+        <ol>
+          <li>Phone apps only support plain text signatures.</li>
+          <li>Set up the signature on your computer first. Emails you send from the web or desktop app will use it.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="tips">
+      <h3>Good to know</h3>
+      <ul>
+        <li><b>Replacing an old signature?</b> Delete the old WiseStamp signature so you don't end up with two, or paste over it.</li>
+        <li><b>Logo or icons not showing?</b> Click "Download pictures" / "Show images" at the top of the email. They load from the internet, so they won't show while you're offline.</li>
+        <li><b>Details changed?</b> Come back to this page, update your details, copy again and paste over your old signature.</li>
+        <li><b>Don't edit the signature inside Outlook or Gmail.</b> Small edits there can break the layout. Make changes here and copy again.</li>
+      </ul>
+    </div>
   </section>
 </main>
 
